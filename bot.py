@@ -195,7 +195,7 @@ async def answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ---------------- MAIN ---------------- #
 
-async def main():
+def main():
     init_db()
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -204,7 +204,7 @@ async def main():
     app.add_handler(MessageHandler(filters.Document.PDF, handle_pdf))
     app.add_handler(CallbackQueryHandler(answer))
 
-    await app.run_polling()
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
