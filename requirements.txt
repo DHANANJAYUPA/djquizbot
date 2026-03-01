@@ -1,0 +1,3 @@
+python-telegram-bot==20.7
+pdfplumber
+psycopg2-binary
