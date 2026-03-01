@@ -3,6 +3,9 @@ import asyncio
 import re
 import pdfplumber
 import psycopg2
+import threading
+from flask import Flask
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -13,10 +16,24 @@ from telegram.ext import (
     filters,
 )
 
+# ---------------- ENV ---------------- #
+
 TOKEN = os.getenv("BOT_TOKEN")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 user_sessions = {}
+
+# ---------------- FLASK SERVER (FOR RENDER PORT BINDING) ---------------- #
+
+app_web = Flask(__name__)
+
+@app_web.route("/")
+def home():
+    return "Bot is running!"
+
+def run_web():
+    port = int(os.environ.get("PORT", 10000))
+    app_web.run(host="0.0.0.0", port=port)
 
 # ---------------- DATABASE ---------------- #
 
@@ -197,6 +214,10 @@ async def answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     init_db()
+
+    # Start Flask server for Render
+    threading.Thread(target=run_web).start()
+
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
